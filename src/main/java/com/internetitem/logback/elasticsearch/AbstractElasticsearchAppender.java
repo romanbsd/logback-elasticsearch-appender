@@ -13,7 +13,7 @@ import com.internetitem.logback.elasticsearch.util.ErrorReporter;
 
 public abstract class AbstractElasticsearchAppender<T> extends UnsynchronizedAppenderBase<T> {
 
-	protected Settings settings;
+	protected final Settings settings;
     protected ElasticsearchProperties elasticsearchProperties;
     protected AbstractElasticsearchPublisher<T> publisher;
     protected ErrorReporter errorReporter;
@@ -50,11 +50,6 @@ public abstract class AbstractElasticsearchAppender<T> extends UnsynchronizedApp
 
     //VisibleForTesting
     protected abstract AbstractElasticsearchPublisher<T> buildElasticsearchPublisher() throws IOException;
-
-    @Override
-	public void stop() {
-		super.stop();
-	}
 
 	@Override
 	protected void append(T eventObject) {

@@ -5,8 +5,8 @@ import ch.qos.logback.core.pattern.PatternLayoutBase;
 import com.internetitem.logback.elasticsearch.config.Property;
 
 public abstract class AbstractPropertyAndEncoder<T> {
-	private Property property;
-	private PatternLayoutBase<T> layout;
+	private final Property property;
+	private final PatternLayoutBase<T> layout;
 
 	public AbstractPropertyAndEncoder(Property property, Context context) {
 		this.property = property;

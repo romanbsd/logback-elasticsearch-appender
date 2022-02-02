@@ -18,7 +18,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
@@ -39,14 +39,14 @@ public class ElasticsearchAppenderTest {
 
     private boolean publisherSet = false;
     private boolean errorReporterSet = false;
-    private AbstractElasticsearchAppender appender;
+    private AbstractElasticsearchAppender<ILoggingEvent> appender;
 
     @Before
     public void setUp() {
 
         appender = new ElasticsearchAppender() {
             @Override
-            protected ClassicElasticsearchPublisher buildElasticsearchPublisher() throws IOException {
+            protected ClassicElasticsearchPublisher buildElasticsearchPublisher() {
                 publisherSet = true;
                 return elasticsearchPublisher;
             }

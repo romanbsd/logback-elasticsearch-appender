@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 
 public class LoggerWriter implements SafeWriter {
 
-	private String loggerName;
+	private final String loggerName;
 
 	private Logger logger;
 

@@ -11,7 +11,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -25,7 +25,7 @@ public class PropertySerializerTest {
     @Mock
     private ILoggingEvent loggingEvent;
 
-    private PropertySerializer<ILoggingEvent> propertySerializer = new PropertySerializer<>();
+    private final PropertySerializer<ILoggingEvent> propertySerializer = new PropertySerializer<>();
 
     @Test
     public void should_default_to_string_type() throws Exception {

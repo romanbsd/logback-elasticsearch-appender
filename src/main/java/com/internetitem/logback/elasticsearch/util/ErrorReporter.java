@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 
 public class ErrorReporter extends ContextAwareBase {
 
-	private Settings settings;
+	private final Settings settings;
 
 	public ErrorReporter(Settings settings, Context context) {
 		setContext(context);

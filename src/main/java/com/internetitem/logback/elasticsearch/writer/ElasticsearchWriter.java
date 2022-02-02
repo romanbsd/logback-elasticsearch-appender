@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.HttpURLConnection;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -16,11 +17,11 @@ import com.internetitem.logback.elasticsearch.util.ErrorReporter;
 
 public class ElasticsearchWriter implements SafeWriter {
 
-	private StringBuilder sendBuffer;
+	private final StringBuilder sendBuffer;
 
-	private ErrorReporter errorReporter;
-	private Settings settings;
-	private Collection<HttpRequestHeader> headerList;
+	private final ErrorReporter errorReporter;
+	private final Settings settings;
+	private final Collection<HttpRequestHeader> headerList;
 
 	private boolean bufferExceeded;
 
@@ -29,7 +30,7 @@ public class ElasticsearchWriter implements SafeWriter {
 		this.settings = settings;
 		this.headerList = headers != null && headers.getHeaders() != null
 			? headers.getHeaders()
-			: Collections.<HttpRequestHeader>emptyList();
+			: Collections.emptyList();
 
 		this.sendBuffer = new StringBuilder();
 	}
@@ -72,7 +73,7 @@ public class ElasticsearchWriter implements SafeWriter {
 				settings.getAuthentication().addAuth(urlConnection, body);
 			}
 
-			Writer writer = new OutputStreamWriter(urlConnection.getOutputStream(), "UTF-8");
+			Writer writer = new OutputStreamWriter(urlConnection.getOutputStream(), StandardCharsets.UTF_8);
 			writer.write(body);
 			writer.flush();
 			writer.close();
@@ -105,7 +106,7 @@ public class ElasticsearchWriter implements SafeWriter {
 			}
 
 			StringBuilder builder = new StringBuilder();
-			InputStreamReader reader = new InputStreamReader(stream, "UTF-8");
+			InputStreamReader reader = new InputStreamReader(stream, StandardCharsets.UTF_8);
 			char[] buf = new char[2048];
 			int numRead;
 			while ((numRead = reader.read(buf)) > 0) {

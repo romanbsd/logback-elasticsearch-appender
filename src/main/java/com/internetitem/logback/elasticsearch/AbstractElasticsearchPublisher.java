@@ -24,49 +24,43 @@ import java.util.concurrent.atomic.AtomicInteger;
 public abstract class AbstractElasticsearchPublisher<T> implements Runnable {
 
 	private static final AtomicInteger THREAD_COUNTER = new AtomicInteger(1);
-	private static final ThreadLocal<DateFormat> DATE_FORMAT = new ThreadLocal<DateFormat> () {
-		@Override
-		protected DateFormat initialValue() {
-			return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-		}
-	};
+	private static final ThreadLocal<DateFormat> DATE_FORMAT = ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ"));
 
 	public static final String THREAD_NAME_PREFIX = "es-writer-";
 
 
 	private volatile List<T> events;
-	private ElasticsearchOutputAggregator outputAggregator;
-	private List<AbstractPropertyAndEncoder<T>> propertyList;
+	private final ElasticsearchOutputAggregator outputAggregator;
+	private final List<AbstractPropertyAndEncoder<T>> propertyList;
 
-	private AbstractPropertyAndEncoder<T> indexPattern;
-	private JsonFactory jf;
-	private JsonGenerator jsonGenerator;
+	private final AbstractPropertyAndEncoder<T> indexPattern;
+	private final JsonGenerator jsonGenerator;
 
-	private ErrorReporter errorReporter;
-	protected Settings settings;
+	private final ErrorReporter errorReporter;
+	protected final Settings settings;
 
 	private final Object lock;
 
 	private volatile boolean working;
 
-	private final PropertySerializer propertySerializer;
+	private final PropertySerializer<T> propertySerializer;
 
 	public AbstractElasticsearchPublisher(Context context, ErrorReporter errorReporter, Settings settings, ElasticsearchProperties properties, HttpRequestHeaders headers) throws IOException {
 		this.errorReporter = errorReporter;
-		this.events = new ArrayList<T>();
+		this.events = new ArrayList<>();
 		this.lock = new Object();
 		this.settings = settings;
 
 		this.outputAggregator = configureOutputAggregator(settings, errorReporter, headers);
 
-		this.jf = new JsonFactory();
-		this.jf.setRootValueSeparator(null);
+		JsonFactory jf = new JsonFactory();
+		jf.setRootValueSeparator(null);
 		this.jsonGenerator = jf.createGenerator(outputAggregator);
 
 		this.indexPattern = buildPropertyAndEncoder(context, new Property("<index>", settings.getIndex(), false));
 		this.propertyList = generatePropertyList(context, properties);
 
-		this.propertySerializer = new PropertySerializer();
+		this.propertySerializer = new PropertySerializer<>();
 	}
 
 	private static ElasticsearchOutputAggregator configureOutputAggregator(Settings settings, ErrorReporter errorReporter, HttpRequestHeaders httpRequestHeaders)  {
@@ -88,7 +82,7 @@ public abstract class AbstractElasticsearchPublisher<T> implements Runnable {
 	}
 
 	private List<AbstractPropertyAndEncoder<T>> generatePropertyList(Context context, ElasticsearchProperties properties) {
-		List<AbstractPropertyAndEncoder<T>> list = new ArrayList<AbstractPropertyAndEncoder<T>>();
+		List<AbstractPropertyAndEncoder<T>> list = new ArrayList<>();
 		if (properties != null) {
 			for (Property property : properties.getProperties()) {
 				list.add(buildPropertyAndEncoder(context, property));
@@ -125,7 +119,7 @@ public abstract class AbstractElasticsearchPublisher<T> implements Runnable {
 				synchronized (lock) {
 					if (!events.isEmpty()) {
 						eventsCopy = events;
-						events = new ArrayList<T>();
+						events = new ArrayList<>();
 						currentTry = 1;
 					}
 

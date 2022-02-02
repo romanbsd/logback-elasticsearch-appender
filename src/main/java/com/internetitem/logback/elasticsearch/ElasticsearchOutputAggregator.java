@@ -12,12 +12,12 @@ import java.util.List;
 
 public class ElasticsearchOutputAggregator extends Writer {
 
-	private Settings settings;
-	private ErrorReporter errorReporter;
-	private List<SafeWriter> writers;
+	private final Settings settings;
+	private final ErrorReporter errorReporter;
+	private final List<SafeWriter> writers;
 
 	public ElasticsearchOutputAggregator(Settings settings, ErrorReporter errorReporter) {
-		this.writers = new ArrayList<SafeWriter>();
+		this.writers = new ArrayList<>();
 		this.settings = settings;
 		this.errorReporter = errorReporter;
 	}
@@ -27,7 +27,7 @@ public class ElasticsearchOutputAggregator extends Writer {
 	}
 
 	@Override
-	public void write(char[] cbuf, int off, int len) throws IOException {
+	public void write(char[] cbuf, int off, int len) {
 		for (SafeWriter writer : writers) {
 			writer.write(cbuf, off, len);
 		}
@@ -55,7 +55,7 @@ public class ElasticsearchOutputAggregator extends Writer {
 				success = false;
 				errorReporter.logWarning("Failed to send events to Elasticsearch: " + e.getMessage());
 				if (settings.isErrorsToStderr()) {
-					System.err.println("[" + new Date().toString() + "] Failed to send events to Elasticsearch: " + e.getMessage());
+					System.err.println("[" + new Date() + "] Failed to send events to Elasticsearch: " + e.getMessage());
 				}
 
 			}
@@ -64,12 +64,12 @@ public class ElasticsearchOutputAggregator extends Writer {
 	}
 
 	@Override
-	public void flush() throws IOException {
+	public void flush() {
 		// No-op
 	}
 
 	@Override
-	public void close() throws IOException {
+	public void close() {
 		// No-op
 	}
 
